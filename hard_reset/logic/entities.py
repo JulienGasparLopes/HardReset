@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Protocol
 
 from game_manager.logic.entity.entity import Entity
@@ -6,23 +5,9 @@ from game_manager.logic.entity.entity_moveable import EntityMoveable
 from game_manager.logic.map.tile import TILE_SIZE
 from vertyces.vertex import Vertex2f
 
+from hard_reset.logic.item.item import Item
+
 DEFAULT_DIMENSION = Vertex2f(TILE_SIZE, TILE_SIZE)
-
-
-@dataclass
-class Item:
-    name: str
-
-
-BOTTLE = Item("Bottle")
-KEY = Item("Key")
-NICOLAS = Item("Nicolas")
-
-NAME_TO_TIME = {
-    "Bottle": BOTTLE,
-    "Key": KEY,
-    "Nicolas": NICOLAS,
-}
 
 
 class Inventory:
@@ -62,6 +47,5 @@ class Player(EntityMoveable, WithInventory):
         self.speed = 1.4
         self.direction = Vertex2f(self.speed, 0)
         self._inventory = Inventory()
-        self._inventory.add_item(NICOLAS, 12)
 
     def update(self, delta_time: float) -> None: ...

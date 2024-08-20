@@ -10,7 +10,12 @@ from game_manager.messaging.message_manager import (
 )
 from vertyces.vertex import Vertex2f
 
-from hard_reset.logic.entities import NAME_TO_TIME, Chest, WithInventory
+from hard_reset.logic.entities import Chest, WithInventory
+from hard_reset.logic.item.crafting_recipe import (
+    CRAFTING_RECIPES,
+    RESULT_NAME_TO_RECIPE,
+)
+from hard_reset.logic.item.item import NAME_TO_ITEM
 
 if TYPE_CHECKING:
     from hard_reset.graphic.graphic_manager import GraphicManager
@@ -50,6 +55,14 @@ class MessageManagerGraphic(ABC, MessageManagerProtocol):
 
     @abstractmethod
     def get_inventory(self, map_uid: Uid, entity_uid: Uid) -> dict[str, int]: ...
+
+    @abstractmethod
+    def get_crafting_recipes(self) -> dict[str, dict[str, int]]: ...
+
+    @abstractmethod
+    def craft_item(
+        self, map_uid: Uid, entity_uid: Uid, recipe_name: str
+    ) -> dict[str, int]: ...
 
     @abstractmethod
     def move_inventory_items(
@@ -122,6 +135,37 @@ class TestMessageManager(MessageManager, MessageManagerLogic, MessageManagerGrap
         chest = cast("Chest", entity)
         return chest._inventory._items
 
+    def get_crafting_recipes(self) -> dict[str, dict[str, int]]:
+        recipes = {}
+        for recipe in CRAFTING_RECIPES:
+            recipes[recipe._result.item.name] = {
+                ingredient.item.name: ingredient.quantity
+                for ingredient in recipe._ingredients
+            }
+        return recipes
+
+    def craft_item(
+        self, map_uid: Uid, entity_uid: Uid, recipe_name: str
+    ) -> dict[str, int]:
+        map = self.logic_manager.get_map(map_uid)
+        assert map is not None
+        entity = map.get_entity(entity_uid)
+        assert entity is not None
+        entity_with_inventory = cast(WithInventory, entity)
+
+        recipe = RESULT_NAME_TO_RECIPE[recipe_name]
+        may_craft = recipe.can_craft(entity_with_inventory._inventory._items)
+        if may_craft:
+            for ingredient in recipe._ingredients:
+                entity_with_inventory._inventory.remove_item(
+                    ingredient.item, ingredient.quantity
+                )
+            entity_with_inventory._inventory.add_item(
+                recipe._result.item, recipe._result.quantity
+            )
+
+        return entity_with_inventory._inventory._items
+
     def move_inventory_items(
         self, map_uid: Uid, from_uid: Uid, to_uid: Uid, item_name: str, quantity: int
     ) -> None:
@@ -131,8 +175,8 @@ class TestMessageManager(MessageManager, MessageManagerLogic, MessageManagerGrap
         assert from_entity is not None
         to_entity = cast(WithInventory, map.get_entity(to_uid))
         assert to_entity is not None
-        from_entity._inventory.remove_item(NAME_TO_TIME[item_name], quantity)
-        to_entity._inventory.add_item(NAME_TO_TIME[item_name], quantity)
+        from_entity._inventory.remove_item(NAME_TO_ITEM[item_name], quantity)
+        to_entity._inventory.add_item(NAME_TO_ITEM[item_name], quantity)
 
     def set_entity_direction(
         self, map_uid: Uid, entity_uid: Uid, direction: Vertex2f

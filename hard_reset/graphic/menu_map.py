@@ -6,6 +6,7 @@ from game_manager.io.mouse import MouseButton
 from game_manager.logic.uid_object import Uid  # TODO: logic leak
 from vertyces.vertex import Vertex2f
 
+from hard_reset.graphic.menu_component.crafting_gui import CraftingGUI
 from hard_reset.graphic.menu_component.inventory_exchange_gui import (
     InventoryExchangeGUI,
 )
@@ -18,7 +19,8 @@ if TYPE_CHECKING:
 class MenuMap(Menu):
     graphic_manager: "GraphicManager"
 
-    _inventory_widget: InventoryExchangeGUI
+    _inventory_gui: InventoryExchangeGUI
+    _crafting_gui: CraftingGUI
     _map_component: MapComponent
 
     def __init__(self, graphic_manager: "GraphicManager", current_map_uid: Uid) -> None:
@@ -26,19 +28,26 @@ class MenuMap(Menu):
         self.graphic_manager = graphic_manager
         self.current_map_uid = current_map_uid
 
-        self._inventory_widget = InventoryExchangeGUI(
+        self._inventory_gui = InventoryExchangeGUI(
             Vertex2f(500, 100), self.graphic_manager.message_manager
+        )
+        self._crafting_gui = CraftingGUI(
+            Vertex2f(100, 100),
+            self.graphic_manager.message_manager,
+            self.graphic_manager.player_uid,
         )
         self._map_component = MapComponent(self)
 
-        self.add_component(self._inventory_widget)
+        self.add_component(self._inventory_gui)
+        self.add_component(self._crafting_gui)
         self.add_component(self._map_component)
 
     def show_inventory(self, chest_uid: Uid) -> None:
-        self._inventory_widget.set_entities(
+        self._inventory_gui.set_entities(
             self.current_map_uid, chest_uid, self.graphic_manager.player_uid
         )
-        self._inventory_widget.show(visible=True)
+        self._crafting_gui.show(False)
+        self._inventory_gui.show(visible=True)
 
     def move_items(
         self, from_uid: Uid, to_uid: Uid, item_name: str, quantity: int
@@ -56,7 +65,14 @@ class MenuMap(Menu):
         self._map_component.update_map_info(current_map_info)
 
         if self.graphic_manager.keyboard.consume_key("a"):
-            self._inventory_widget.show(False)
+            self._inventory_gui.show(False)
+
+        if self.graphic_manager.keyboard.consume_key("c"):
+            self._inventory_gui.show(False)
+            if not self._crafting_gui.visible:
+                self._crafting_gui.show_crating_gui(self.current_map_uid)
+            else:
+                self._crafting_gui.show(False)
 
         direction = Vertex2f(0, 0)
         if self.graphic_manager.keyboard.is_pressed("q"):

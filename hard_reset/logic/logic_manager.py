@@ -7,7 +7,8 @@ from game_manager.logic.uid_object import Uid
 from game_manager.storage.storage_manager import StorageManager
 from vertyces.vertex import Vertex2f
 
-from hard_reset.logic.entities import BOTTLE, KEY, Chest, Player
+from hard_reset.logic.entities import Chest, Player
+from hard_reset.logic.item.item import BOTTLE, KEY, WOODEN_PLANK
 from hard_reset.logic.logic_storage_manager import LogicStorageManager
 from hard_reset.messaging.messaging import MessageManagerLogic
 
@@ -41,6 +42,7 @@ class TestLogicManager(LogicManager[MessageManagerLogic, TiledMap]):
         chest1 = Chest(Vertex2f(1 * TILE_SIZE, 4 * TILE_SIZE))
         chest1._inventory.add_item(BOTTLE, 1)
         chest1._inventory.add_item(KEY, 3)
+        chest1._inventory.add_item(WOODEN_PLANK, 3)
         map1.add_entity(chest1)
 
         chest2 = Chest(Vertex2f(2 * TILE_SIZE, 6 * TILE_SIZE))
@@ -81,5 +83,6 @@ class TestLogicManager(LogicManager[MessageManagerLogic, TiledMap]):
 
         current_map = list(self._maps.values())[0]
         current_map.add_entity(player)
+        player._inventory.add_item(WOODEN_PLANK, 5)
 
         return player, current_map.uid

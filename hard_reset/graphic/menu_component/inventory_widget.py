@@ -39,24 +39,27 @@ class InventoryItemButton(Button):
 
 class InventoryWidget(GraphicalComponent):
     _name: str
+    _item_click_callback: Callable[[str], None]
 
     def __init__(
         self,
         position: Vertex2f,
         name: str,
-        inventory: dict[str, int],
-        click_item_callback: Callable[[str], None],
+        item_click_callback: Callable[[str], None],
     ) -> None:
-        super().__init__(position, Vertex2f(125, 400), z_index=11)
+        super().__init__(position, Vertex2f(125, 400))
         self._name = name
+        self._item_click_callback = item_click_callback
 
+    def set_inventory(self, inventory: dict[str, int]) -> None:
+        self.clear_components()
         for idx, (item_name, item_count) in enumerate(inventory.items()):
             self.add_component(
                 InventoryItemButton(
                     Vertex2f(10, idx * 22 + 30),
                     item_name,
                     item_count,
-                    click_item_callback,
+                    self._item_click_callback,
                 )
             )
 

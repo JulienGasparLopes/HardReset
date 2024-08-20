@@ -46,26 +46,26 @@ class InventoryExchangeGUI(GraphicalComponent):
         items_right = self._message_manager.get_inventory(
             self._map_uid, self._right_entity_uid
         )
-        self.add_component(
-            InventoryWidget(
-                Vertex2f(0, 0),
-                "Left",
-                items_left,
-                lambda name: self._move_items(
-                    self._left_entity_uid, self._right_entity_uid, name, 1
-                ),
-            )
+
+        inventory_left_widget = InventoryWidget(
+            Vertex2f(0, 0),
+            "Left",
+            lambda name: self._move_items(
+                self._left_entity_uid, self._right_entity_uid, name, 1
+            ),
         )
-        self.add_component(
-            InventoryWidget(
-                Vertex2f(125, 0),
-                "Right",
-                items_right,
-                lambda name: self._move_items(
-                    self._right_entity_uid, self._left_entity_uid, name, 1
-                ),
-            )
+        inventory_left_widget.set_inventory(items_left)
+        self.add_component(inventory_left_widget)
+
+        inventory_right_widget = InventoryWidget(
+            Vertex2f(125, 0),
+            "Right",
+            lambda name: self._move_items(
+                self._right_entity_uid, self._left_entity_uid, name, 1
+            ),
         )
+        inventory_right_widget.set_inventory(items_right)
+        self.add_component(inventory_right_widget)
 
     def _move_items(
         self, from_uid: Uid, to_uid: Uid, item_name: str, quantity: int
