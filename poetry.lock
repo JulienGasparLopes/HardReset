@@ -19,7 +19,7 @@ vertyces = {git = "https://github.com/JulienGasparLopes/Vertyces.git"}
 type = "git"
 url = "https://github.com/JulienGasparLopes/GameManager.git"
 reference = "HEAD"
-resolved_reference = "50299f45fadb48c130138b0d87493190c0ac6b7f"
+resolved_reference = "b1ab5bbdd837442c9319d90494233ec947877861"
 
 [[package]]
 name = "isort"
@@ -189,7 +189,7 @@ mypy = "^1.11.1"
 type = "git"
 url = "https://github.com/JulienGasparLopes/Vertyces.git"
 reference = "HEAD"
-resolved_reference = "bb37aebf8797e45cc894c5c5e2bae92276a888f6"
+resolved_reference = "09fc0b3adf4fc0d3e7064ec794ddc28005d1cea6"
 
 [metadata]
 lock-version = "2.0"

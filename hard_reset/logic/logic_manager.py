@@ -5,7 +5,7 @@ from game_manager.logic.map.tile import TILE_SIZE, Tile
 from game_manager.logic.map.tiled_map import TiledMap
 from game_manager.logic.uid_object import Uid
 from game_manager.storage.storage_manager import StorageManager
-from vertyces.vertex.vertex2f import Vertex2f
+from vertyces.vertex import Vertex2f
 
 from hard_reset.logic.entities import BOTTLE, KEY, Chest, Player
 from hard_reset.logic.logic_storage_manager import LogicStorageManager

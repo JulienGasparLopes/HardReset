@@ -6,8 +6,7 @@ from game_manager.graphic.component.graphical_component import GraphicalComponen
 from game_manager.graphic.renderer import Renderer
 from game_manager.io.mouse import MouseButton
 from game_manager.logic.uid_object import Uid  # TODO: logic leak
-from vertyces.vertex.vertex2f import Vertex2f
-from vertyces.vertex.vertex3f import Vertex3f
+from vertyces.vertex import Vertex2f, Vertex3f
 
 from hard_reset.messaging.messaging import MapInfoPacket
 

@@ -1,5 +1,5 @@
 from game_manager.fs_storage.fs_storage_manager import FileSystemStorageManager
-from vertyces.vertex.vertex2f import Vertex2f
+from vertyces.vertex import Vertex2f
 
 from hard_reset.logic.entities import Player
 

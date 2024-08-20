@@ -5,7 +5,7 @@ from game_manager.graphic.component.button import Button
 from game_manager.graphic.component.graphical_component import GraphicalComponent
 from game_manager.graphic.renderer import Renderer
 from game_manager.io.mouse import MouseButton
-from vertyces.vertex.vertex2f import Vertex2f
+from vertyces.vertex import Vertex2f
 
 
 class InventoryItemButton(Button):

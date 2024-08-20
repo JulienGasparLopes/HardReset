@@ -4,7 +4,7 @@ from typing import Protocol
 from game_manager.logic.entity.entity import Entity
 from game_manager.logic.entity.entity_moveable import EntityMoveable
 from game_manager.logic.map.tile import TILE_SIZE
-from vertyces.vertex.vertex2f import Vertex2f
+from vertyces.vertex import Vertex2f
 
 DEFAULT_DIMENSION = Vertex2f(TILE_SIZE, TILE_SIZE)
 

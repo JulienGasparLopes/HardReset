@@ -4,7 +4,7 @@ from game_manager.graphic.menu.menu import Menu
 from game_manager.graphic.renderer import Renderer
 from game_manager.io.mouse import MouseButton
 from game_manager.logic.uid_object import Uid  # TODO: logic leak
-from vertyces.vertex.vertex2f import Vertex2f
+from vertyces.vertex import Vertex2f
 
 from hard_reset.graphic.menu_component.inventory_exchange_gui import (
     InventoryExchangeGUI,

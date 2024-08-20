@@ -8,7 +8,7 @@ from game_manager.messaging.message_manager import (
     MessageManager,
     MessageManagerProtocol,
 )
-from vertyces.vertex.vertex2f import Vertex2f
+from vertyces.vertex import Vertex2f
 
 from hard_reset.logic.entities import NAME_TO_TIME, Chest, WithInventory
 
