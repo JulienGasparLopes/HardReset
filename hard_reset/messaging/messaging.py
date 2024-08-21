@@ -19,7 +19,7 @@ from hard_reset.logic.item.item import NAME_TO_ITEM
 
 if TYPE_CHECKING:
     from hard_reset.graphic.graphic_manager import GraphicManager
-    from hard_reset.logic.logic_manager import TestLogicManager
+    from hard_reset.logic.logic_manager import LogicManager
 
 
 @dataclass
@@ -82,11 +82,11 @@ class MessageManagerGraphic(ABC, MessageManagerProtocol):
 
 
 class TestMessageManager(MessageManager, MessageManagerLogic, MessageManagerGraphic):
-    logic_manager: "TestLogicManager"
+    logic_manager: "LogicManager"
     graphic_manager: "GraphicManager"
 
     def __init__(
-        self, logic_manager: "TestLogicManager", graphic_manager: "GraphicManager"
+        self, logic_manager: "LogicManager", graphic_manager: "GraphicManager"
     ) -> None:
         self.logic_manager = logic_manager
         self.graphic_manager = graphic_manager

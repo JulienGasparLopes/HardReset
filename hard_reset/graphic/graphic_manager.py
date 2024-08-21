@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from game_manager.graphic.graphic_manager import GraphicManager as BaseGraphicManager
+from game_manager.graphic.graphic_manager import BaseGraphicManager
 from game_manager.graphic.renderer import Renderer
 from game_manager.graphic.window import Window
 from game_manager.io.keyboard import Keyboard

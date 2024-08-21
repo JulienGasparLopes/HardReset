@@ -88,7 +88,7 @@ vertyces = {git = "https://github.com/JulienGasparLopes/Vertyces.git"}
 type = "git"
 url = "https://github.com/JulienGasparLopes/GameManager.git"
 reference = "HEAD"
-resolved_reference = "b1ab5bbdd837442c9319d90494233ec947877861"
+resolved_reference = "f8bcb35b5141be770e22f92216d20b6f8b50f163"
 
 [[package]]
 name = "isort"

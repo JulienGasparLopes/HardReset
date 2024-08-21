@@ -1,12 +1,12 @@
 from game_manager.tk.utils import initialize_tk_context
 
 from hard_reset.graphic.graphic_manager import GraphicManager
-from hard_reset.logic.logic_manager import TestLogicManager
+from hard_reset.logic.logic_manager import LogicManager
 from hard_reset.messaging.messaging import TestMessageManager
 
 
 def main() -> None:
-    logic_manager = TestLogicManager()
+    logic_manager = LogicManager()
 
     window, renderer, mouse, keyboard = initialize_tk_context()
     graphic_manager = GraphicManager(window, renderer, keyboard, mouse)
@@ -26,6 +26,10 @@ if __name__ == "__main__":
 
 """
 TODO List:
+- Save inventories (and map)
+- Add player stats and crafting requirements
+- Add Xp and leveling ? 
+
 - Improve abstraction of keyboard.py
 - Map switch logic (portal ?)
 - Create common folder for shared code (such as Uid)

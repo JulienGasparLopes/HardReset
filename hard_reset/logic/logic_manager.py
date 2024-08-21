@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from game_manager.logic.logic_manager import LogicManager
+from game_manager.logic.logic_manager import BaseLogicManager
 from game_manager.logic.map.tile import TILE_SIZE, Tile
 from game_manager.logic.map.tiled_map import TiledMap
 from game_manager.logic.uid_object import Uid
@@ -29,7 +29,7 @@ class DefaultTiledMap(TiledMap):
     def update(self, delta_time: float) -> None: ...
 
 
-class TestLogicManager(LogicManager[MessageManagerLogic, TiledMap]):
+class LogicManager(BaseLogicManager[MessageManagerLogic, TiledMap]):
     _storage_manager: StorageManager
 
     def __init__(self) -> None:
