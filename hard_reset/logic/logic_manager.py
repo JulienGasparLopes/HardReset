@@ -1,32 +1,17 @@
 from uuid import UUID
 
 from game_manager.logic.logic_manager import BaseLogicManager
-from game_manager.logic.map.tile import TILE_SIZE, Tile
+from game_manager.logic.map.tile import TILE_SIZE
 from game_manager.logic.map.tiled_map import TiledMap
 from game_manager.logic.uid_object import Uid
 from game_manager.storage.storage_manager import StorageManager
 from vertyces.vertex import Vertex2f
 
-from hard_reset.logic.entities import Chest, Player
-from hard_reset.logic.item.item import BOTTLE, KEY, WOODEN_PLANK
+from hard_reset.logic.entities import Player
+from hard_reset.logic.item.item import WOODEN_PLANK
 from hard_reset.logic.logic_storage_manager import LogicStorageManager
+from hard_reset.logic.map.maps import Map1, Map2
 from hard_reset.messaging.messaging import MessageManagerLogic
-
-GROUND_TILE = Tile(walkable=True)
-WALL_TILE = Tile(walkable=False)
-
-
-class DefaultTiledMap(TiledMap):
-    def __init__(self, width: int, height: int) -> None:
-        super().__init__(width, height, default_tile=GROUND_TILE)
-        for y in range(height):
-            self._tiles[y][0] = WALL_TILE
-            self._tiles[y][width - 1] = WALL_TILE
-        for x in range(width):
-            self._tiles[0][x] = WALL_TILE
-            self._tiles[height - 1][x] = WALL_TILE
-
-    def update(self, delta_time: float) -> None: ...
 
 
 class LogicManager(BaseLogicManager[MessageManagerLogic, TiledMap]):
@@ -36,24 +21,8 @@ class LogicManager(BaseLogicManager[MessageManagerLogic, TiledMap]):
         super().__init__()
         self._storage_manager = LogicStorageManager("save/logic")
 
-        map1 = DefaultTiledMap(11, 11)
-        map1._tiles[5][5] = WALL_TILE
-
-        chest1 = Chest(Vertex2f(1 * TILE_SIZE, 4 * TILE_SIZE))
-        chest1._inventory.add_item(BOTTLE, 1)
-        chest1._inventory.add_item(KEY, 3)
-        chest1._inventory.add_item(WOODEN_PLANK, 3)
-        map1.add_entity(chest1)
-
-        chest2 = Chest(Vertex2f(2 * TILE_SIZE, 6 * TILE_SIZE))
-        chest2._inventory.add_item(KEY, 7)
-        map1.add_entity(chest2)
-
-        map2 = DefaultTiledMap(10, 12)
-        map2._tiles[3][4] = WALL_TILE
-
-        self.add_map(map1)
-        self.add_map(map2)
+        self.add_map(Map1())
+        self.add_map(Map2())
 
     def update(self, delta_ns: float) -> None: ...
 

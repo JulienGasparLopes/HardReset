@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, cast
 
 import vertyces.utils.colors as colors
 from game_manager.graphic.component.button import Button
@@ -8,7 +8,7 @@ from game_manager.io.mouse import MouseButton
 from game_manager.logic.uid_object import Uid  # TODO: logic leak
 from vertyces.vertex import Vertex2f, Vertex3f
 
-from hard_reset.messaging.messaging import MapInfoPacket
+from hard_reset.messaging.messaging import EntityDoorInfoPacket, MapInfoPacket
 
 if TYPE_CHECKING:
     from hard_reset.graphic.menu_map import MenuMap
@@ -58,6 +58,35 @@ class Player(GraphicalComponent):
         return False
 
 
+class Door(GraphicalComponent):
+    uid: Uid
+    map_travel_uid: Uid
+    on_use: Callable[[Uid], None]
+
+    def __init__(
+        self,
+        uid: Uid,
+        position: Vertex2f,
+        map_travel_uid: Uid,
+        on_use: Callable[[Uid], None],
+    ) -> None:
+        super().__init__(position, Vertex2f(TILE_SIZE, TILE_SIZE * 2))
+        self.uid = uid
+        self.map_travel_uid = map_travel_uid
+        self.on_use = on_use
+
+    def render(self, renderer: Renderer) -> None:
+        renderer.draw_rect(
+            Vertex2f(0, 0), self.bounds.dimensions, colors.YELLOW, z_index=12
+        )
+
+    def on_click(
+        self, button: MouseButton, position: Vertex2f, start_position: Vertex2f
+    ) -> bool:
+        self.on_use(self.map_travel_uid)
+        return True
+
+
 class MapComponent(GraphicalComponent):
     _current_map_info: MapInfoPacket
     _menu_map: "MenuMap"
@@ -80,6 +109,11 @@ class MapComponent(GraphicalComponent):
     def _get_map_dimensions(self) -> Vertex2f:
         return Vertex2f(self._current_map_info.width, self._current_map_info.height)
 
+    def change_map(self, map_info: MapInfoPacket) -> None:
+        self._current_map_info = map_info
+        self._graphical_entities.clear()
+        self.clear_components()
+
     def update_map_info(self, map_info: MapInfoPacket) -> None:
         self._current_map_info = map_info
 
@@ -100,6 +134,14 @@ class MapComponent(GraphicalComponent):
                 elif entity_info.type_name == "Player":
                     if entity_component is None:
                         entity_component = Player(entity_uid, entity_info.position)
+                elif entity_info.type_name == "Door":
+                    entity_info = cast(EntityDoorInfoPacket, entity_info)
+                    entity_component = Door(
+                        entity_uid,
+                        entity_info.position,
+                        map_travel_uid=entity_info.map_travel_uid,
+                        on_use=self._menu_map.use_map_travel,
+                    )
                 else:
                     print(f"Unknown entity type: {entity_info.type_name}")
                     continue
@@ -133,11 +175,11 @@ class MapComponent(GraphicalComponent):
         max_height = self._current_map_info.height
         for i in range(0, max_height, TILE_SIZE):
             renderer.draw_line(
-                Vertex2f(i, 0), Vertex2f(i, max_width), Vertex3f(0, 0, 0), z_index=1
+                Vertex2f(0, i), Vertex2f(max_width, i), Vertex3f(0, 0, 0), z_index=1
             )
-        for i in range(0, max_width, TILE_SIZE):
+        for j in range(0, max_width, TILE_SIZE):
             renderer.draw_line(
-                Vertex2f(0, i), Vertex2f(max_height, i), Vertex3f(0, 0, 0), z_index=1
+                Vertex2f(j, 0), Vertex2f(j, max_height), Vertex3f(0, 0, 0), z_index=1
             )
 
     def on_click(

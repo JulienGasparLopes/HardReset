@@ -3,6 +3,7 @@ from typing import Protocol
 from game_manager.logic.entity.entity import Entity
 from game_manager.logic.entity.entity_moveable import EntityMoveable
 from game_manager.logic.map.tile import TILE_SIZE
+from game_manager.logic.uid_object import Uid
 from vertyces.vertex import Vertex2f
 
 from hard_reset.logic.item.item import Item
@@ -47,5 +48,15 @@ class Player(EntityMoveable, WithInventory):
         self.speed = 1.4
         self.direction = Vertex2f(self.speed, 0)
         self._inventory = Inventory()
+
+    def update(self, delta_time: float) -> None: ...
+
+
+class Door(Entity):
+    _map_travel_uid: Uid
+
+    def __init__(self, position: Vertex2f, map_travel_uid: Uid) -> None:
+        super().__init__(position, Vertex2f(TILE_SIZE, TILE_SIZE * 2))
+        self._map_travel_uid = map_travel_uid
 
     def update(self, delta_time: float) -> None: ...

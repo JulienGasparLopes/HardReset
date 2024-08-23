@@ -10,12 +10,13 @@ from game_manager.messaging.message_manager import (
 )
 from vertyces.vertex import Vertex2f
 
-from hard_reset.logic.entities import Chest, WithInventory
+from hard_reset.logic.entities import Chest, Door, WithInventory
 from hard_reset.logic.item.crafting_recipe import (
     CRAFTING_RECIPES,
     RESULT_NAME_TO_RECIPE,
 )
 from hard_reset.logic.item.item import NAME_TO_ITEM
+from hard_reset.logic.map.maps import BaseMap
 
 if TYPE_CHECKING:
     from hard_reset.graphic.graphic_manager import GraphicManager
@@ -27,6 +28,13 @@ class EntityInfoPacket:
     type_name: str
     uid: Uid
     position: Vertex2f
+
+
+@dataclass
+class EntityDoorInfoPacket(EntityInfoPacket):
+    # TODO: may be removed when direction is added to EntityInfoPacket
+    dimensions: Vertex2f
+    map_travel_uid: Uid
 
 
 @dataclass
@@ -73,6 +81,11 @@ class MessageManagerGraphic(ABC, MessageManagerProtocol):
     def get_map_info(self, map_uid: Uid) -> MapInfoPacket: ...
 
     @abstractmethod
+    def use_map_travel(
+        self, entity_uid: Uid, map_uid: Uid, map_travel_uid: Uid
+    ) -> Uid: ...
+
+    @abstractmethod
     def set_entity_direction(
         self, map_uid: Uid, entity_uid: Uid, direction: Vertex2f
     ) -> None: ...
@@ -104,19 +117,29 @@ class TestMessageManager(MessageManager, MessageManagerLogic, MessageManagerGrap
 
     def get_map_info(self, map_uid: Uid) -> MapInfoPacket:
         current_map = self.logic_manager.get_map(map_uid)
+        current_map = cast(BaseMap, current_map)
         assert current_map is not None
         tiles_data = {}
         for i, row in enumerate(current_map._tiles):
             for j, tile in enumerate(row):
-                tiles_data[(i, j)] = tile.walkable
+                tiles_data[(j, i)] = tile.walkable
 
         entities_data: dict[Uid, EntityInfoPacket] = {}
         for uid, entity in current_map._entities.items():
-            entities_data[uid] = EntityInfoPacket(
-                type_name=entity.__class__.__name__,
-                uid=entity.uid,
-                position=entity.bounds.position,
-            )
+            if isinstance(entity, Door):
+                entities_data[uid] = EntityDoorInfoPacket(
+                    type_name=entity.__class__.__name__,
+                    uid=entity.uid,
+                    position=entity.bounds.position,
+                    dimensions=entity.bounds.dimensions,
+                    map_travel_uid=entity._map_travel_uid,
+                )
+            else:
+                entities_data[uid] = EntityInfoPacket(
+                    type_name=entity.__class__.__name__,
+                    uid=entity.uid,
+                    position=entity.bounds.position,
+                )
 
         return MapInfoPacket(
             width_in_tiles=current_map.width_in_tiles,
@@ -126,6 +149,28 @@ class TestMessageManager(MessageManager, MessageManagerLogic, MessageManagerGrap
             tiles=tiles_data,
             entities=entities_data,
         )
+
+    def use_map_travel(self, entity_uid: Uid, map_uid: Uid, map_travel_uid: Uid) -> Uid:
+        current_map = self.logic_manager.get_map(map_uid)
+        assert current_map is not None
+
+        entity = current_map.get_entity(entity_uid)
+        assert entity is not None
+
+        current_map = cast(BaseMap, current_map)
+        map_travel = current_map.get_map_travel(map_travel_uid)
+        next_map_uid, spawn_point_uid = map_travel.destination
+        next_map = self.logic_manager.get_map(next_map_uid)
+        assert next_map is not None
+
+        next_map = cast(BaseMap, next_map)
+        spawn_point = next_map.get_spawn_point(spawn_point_uid)
+
+        current_map.remove_entity(entity_uid)
+        entity.bounds = entity.bounds.at_position(spawn_point._position)
+        next_map.add_entity(entity)
+
+        return next_map.uid
 
     def get_inventory(self, map_uid: Uid, entity_uid: Uid) -> dict[str, int]:
         map = self.logic_manager.get_map(map_uid)

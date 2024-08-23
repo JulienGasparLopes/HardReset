@@ -56,6 +56,15 @@ class MenuMap(Menu):
             self.current_map_uid, from_uid, to_uid, item_name, quantity
         )
 
+    def use_map_travel(self, map_travel_uid: Uid) -> None:
+        self.current_map_uid = self.graphic_manager.message_manager.use_map_travel(
+            self.graphic_manager.player_uid, self.current_map_uid, map_travel_uid
+        )
+        current_map_info = self.graphic_manager.message_manager.get_map_info(
+            self.current_map_uid
+        )
+        self._map_component.change_map(current_map_info)
+
     def render(self, delta_ns: float, renderer: Renderer) -> None:
         self.graphic_manager.window.set_title(f"FPS: {self.graphic_manager.fps}")
 
