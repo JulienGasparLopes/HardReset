@@ -7,9 +7,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-game-manager = {git = "https://github.com/JulienGasparLopes/GameManager.git"}
 isort = "^5.13.2"
 black = "^24.8.0"
+game-manager = {git = "https://github.com/JulienGasparLopes/GameManager.git"}
 
 [build-system]
 requires = ["poetry-core"]

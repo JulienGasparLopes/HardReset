@@ -10,6 +10,13 @@
             "request": "launch",
             "program": "hard_reset/main.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug Editor",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "hard_reset/editor/main.py",
+            "console": "integratedTerminal"
         }
     ]
 }
