@@ -83,10 +83,8 @@ class MapGui(GraphicalComponent):
         end_tile_position = position.divided(TILE_SIZE, floor=True)
 
         offset = self.manage_resize(start_tile_position, end_tile_position)
-        print(offset)
         start_tile_position = start_tile_position.translated(offset)
         end_tile_position = end_tile_position.translated(offset)
-        print(start_tile_position, end_tile_position)
 
         for x in range(
             int(min(start_tile_position.x, end_tile_position.x)),
@@ -97,7 +95,6 @@ class MapGui(GraphicalComponent):
                 int(max(start_tile_position.y, end_tile_position.y)) + 1,
             ):
                 try:
-                    print(x, y)
                     if x >= 0 and y >= 0:
                         self._tiles.set(
                             Vertex2f(x, y),
